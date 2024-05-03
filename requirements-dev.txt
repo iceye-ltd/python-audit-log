@@ -1,0 +1,5 @@
+black
+mypy
+pip-tools
+pre-commit
+ruff
