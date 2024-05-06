@@ -4,6 +4,7 @@ description = "Audit logging library for Python"
 dynamic = ["version"]
 requires-python = ">=3.11"
 readme = "README.md"
+dependencies = ["joserfc"]
 
 [project.urls]
 repository = "https://github.com/iceye-ltd/python-audit-log"
