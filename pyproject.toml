@@ -41,6 +41,7 @@ select = [
     "TRY",   # exceptions handling
     "UP",    # pyupgrade
 ]
+flake8-builtins.builtins-ignorelist = ["hash", "help", "id", "list", "type"]
 
 ignore = [
     "E501",   # Ignore line length errors, Black will handle formatting and long comments/strings are ok

@@ -1,5 +1,5 @@
-from enum import StrEnum
 from dataclasses import dataclass
+from enum import StrEnum
 
 SCHEMA_VERSION = "v1"
 
@@ -23,11 +23,6 @@ class OutcomeResult(StrEnum):
 
 @dataclass
 class Principal:
-    type_: PrincipalType
+    type: PrincipalType
     authority: str
     id: str
-
-    def to_json(self):
-        data = self.__dict__.copy()
-        data["type"] = data.pop("type_")
-        return data

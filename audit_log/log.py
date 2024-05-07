@@ -2,6 +2,7 @@ import functools
 import json
 import uuid
 from collections.abc import Callable
+from contextvars import ContextVar
 from datetime import UTC, datetime
 from functools import singledispatch
 from typing import Any
@@ -13,7 +14,6 @@ from audit_log.schema import (
     Principal,
     PrincipalType,
 )
-from contextvars import ContextVar
 
 
 @singledispatch
@@ -70,7 +70,7 @@ def log(
                     "after": after,
                 },
                 "context": {"request": {"id": request_id}},
-                "principal": principal.to_json(),
+                "principal": principal.__dict__,
             }
         )
     )
@@ -85,7 +85,7 @@ if __name__ == "__main__":
         request_id=uuid.uuid4(),
         outcome_reason=ValueError("test"),  # type: ignore[arg-type] # Purposeful mis-type to verify
         principal=Principal(
-            type_=PrincipalType.USER,
+            type=PrincipalType.USER,
             authority="respect_mime",
             id="eric.cartman@yahoo.com",
         ),
