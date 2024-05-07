@@ -2,12 +2,18 @@ import functools
 import json
 import uuid
 from collections.abc import Callable
-from contextvars import ContextVar
 from datetime import UTC, datetime
 from functools import singledispatch
 from typing import Any
 
-from audit_log.schema import SCHEMA_VERSION, ActionType, OutcomeResult, PrincipalType
+from audit_log.schema import (
+    SCHEMA_VERSION,
+    ActionType,
+    OutcomeResult,
+    Principal,
+    PrincipalType,
+)
+from contextvars import ContextVar
 
 
 @singledispatch
@@ -39,7 +45,7 @@ def log(
     resource_type: str,
     resource_id: Any,
     result: OutcomeResult,
-    principal: dict[str, str],
+    principal: Principal,
     request_id: str | uuid.UUID | None = None,
     outcome_reason: str | None = None,
     before: Any | None = None,
@@ -64,7 +70,7 @@ def log(
                     "after": after,
                 },
                 "context": {"request": {"id": request_id}},
-                "principal": principal,
+                "principal": principal.to_json(),
             }
         )
     )
@@ -78,9 +84,9 @@ if __name__ == "__main__":
         result=OutcomeResult.SUCCEEDED,
         request_id=uuid.uuid4(),
         outcome_reason=ValueError("test"),  # type: ignore[arg-type] # Purposeful mis-type to verify
-        principal={
-            "type": PrincipalType.USER,
-            "authority": "respect_mine",
-            "id": "eric.cartman@yahoo.com",
-        },
+        principal=Principal(
+            type_=PrincipalType.USER,
+            authority="respect_mime",
+            id="eric.cartman@yahoo.com",
+        ),
     )
