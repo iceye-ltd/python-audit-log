@@ -1,18 +1,12 @@
 import re
-from dataclasses import dataclass
 from urllib.parse import urlparse
 
-from joserfc import jwt
-from joserfc.jwk import KeyFlexible
+from dataclasses import dataclass
 
-from .schema import PrincipalType
+from .schema import Principal, PrincipalType
 
+MTLS_CERT_HEADER = "x-forwarded-client-cert"
 SPIFFE_PATH_RE = re.compile(r"/ns/(?P<ns>[0-9a-z\-]+)/sa/(?P<sa>[0-9a-z\-]+)/?")
-CLAIMS_REQUESTS = jwt.JWTClaimsRegistry(
-    iss={"essential": True},
-    sub={"essential": True},
-    sub_type={"essential": True, "values": ["USER", "SYSTEM"]},
-)
 SUB_HEADER = "x-jwt-claim-sub"
 ISS_HEADER = "x-jwt-claim-iss"
 SUB_TYPE_HEADER = "x-jwt-claim-sub-type"
@@ -69,18 +63,13 @@ def parse_spiffe(xfcc_header: str) -> ParsedSPIFFE:
 
 def get_principal_from_headers(
     headers: dict[str, str],
-    *,
-    use_jwt: bool = False,
-    jwt_key: KeyFlexible | None = None,
-) -> dict[str, str]:
+) -> Principal:
     """Get principal from headers, supports mTLS, headers set in Istio, and JWTs.
 
     Note: Do not use this to handle your auth, it expects auth to already be handled elsewhere and this is just to help get principals.
 
     Args:
         headers (dict[str, str]): Headers with all keys lowercase
-        use_jwt (bool, optional): Enables checking of JWT for claims, requires `jwt_key` to be set (see joserfc documentation). Defaults to False.
-        jwt_key (KeyFlexible | None, optional): Only required when `use_jwt` is True.
 
     Raises:
         ValueError: Invalid configuration or headers
@@ -89,30 +78,14 @@ def get_principal_from_headers(
     Returns:
         dict[str, str]: Principal dictionary in proper format
     """
-    if (use_jwt and not headers.get("authorization")) or not headers.get(ISS_HEADER):
-        spiffe = parse_spiffe(headers["x-forwarded-client-cert"])
-        return {
-            "type": PrincipalType.SERVICE,
-            "authority": spiffe.domain,
-            "id": spiffe.spiffe_id,
-        }
-    if use_jwt:
-        if not jwt_key:
-            raise ValueError("Missing jwt_key when use_jwt is enabled")
-        raw_token = headers["authorization"].split(" ")[1]
-        # Note: not validating the token here, expecting validation to be handled elsewhere
-        token = jwt.decode(raw_token, jwt_key)
-        CLAIMS_REQUESTS.validate(token.claims)
-        iss = token.claims["iss"]
-        sub = token.claims["sub"]
-        sub_type = token.claims["sub_type"]
-    else:
-        iss = headers[ISS_HEADER]
-        sub = headers[SUB_HEADER]
-        sub_type = headers[SUB_TYPE_HEADER]
+    if headers.get(MTLS_CERT_HEADER):
+        spiffe = parse_spiffe(headers[MTLS_CERT_HEADER])
+        return Principal(
+            type_=PrincipalType.SERVICE, authority=spiffe.domain, id=spiffe.spiffe_id
+        )
 
-    return {
-        "type": PrincipalType(sub_type),
-        "authority": iss,
-        "id": sub,
-    }
+    iss = headers[ISS_HEADER]
+    sub = headers[SUB_HEADER]
+    sub_type = headers[SUB_TYPE_HEADER]
+
+    return Principal(type_=PrincipalType(sub_type), authority=iss, id=sub)
