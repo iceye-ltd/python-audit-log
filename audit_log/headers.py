@@ -80,11 +80,11 @@ def get_principal_from_headers(
     if headers.get(MTLS_CERT_HEADER):
         spiffe = parse_spiffe(headers[MTLS_CERT_HEADER])
         return Principal(
-            type_=PrincipalType.SERVICE, authority=spiffe.domain, id=spiffe.spiffe_id
+            type=PrincipalType.SERVICE, authority=spiffe.domain, id=spiffe.spiffe_id
         )
 
     iss = headers[ISS_HEADER]
     sub = headers[SUB_HEADER]
     sub_type = headers[SUB_TYPE_HEADER]
 
-    return Principal(type_=PrincipalType(sub_type), authority=iss, id=sub)
+    return Principal(type=PrincipalType(sub_type), authority=iss, id=sub)
