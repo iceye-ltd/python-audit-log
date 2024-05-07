@@ -1,7 +1,6 @@
 import re
-from urllib.parse import urlparse
-
 from dataclasses import dataclass
+from urllib.parse import urlparse
 
 from .schema import Principal, PrincipalType
 

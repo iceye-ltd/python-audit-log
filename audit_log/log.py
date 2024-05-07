@@ -19,7 +19,6 @@ from audit_log.schema import (
     ActionType,
     OutcomeResult,
     Principal,
-    PrincipalType,
 )
 
 
