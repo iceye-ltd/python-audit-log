@@ -70,7 +70,7 @@ def log(
                     "after": after,
                 },
                 "context": {"request": {"id": request_id}},
-                "principal": principal.__dict__,
+                "principal": dataclasses.asdict(principal),
             }
         )
     )
