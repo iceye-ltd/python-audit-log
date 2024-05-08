@@ -1,6 +1,3 @@
-import io
-from unittest.mock import patch
-
 import pytest
 from freezegun import freeze_time
 
@@ -70,18 +67,17 @@ def test_log(
     outcome_reason,
     principal,
     expected_log,
+    capsys,
 ):
     with freeze_time("2022-04-20T12:00:00+00:00"):
-        captured_output = io.StringIO()
-        with patch("sys.stdout", new=captured_output):
-            log(
-                action_type=action_type,
-                resource_type=resource_type,
-                resource_id=resource_id,
-                result=result,
-                request_id=request_id,
-                outcome_reason=outcome_reason,
-                principal=principal,
-            )
-            printed_message = captured_output.getvalue().strip()
-            assert printed_message == expected_log
+        log(
+            action_type=action_type,
+            resource_type=resource_type,
+            resource_id=resource_id,
+            result=result,
+            request_id=request_id,
+            outcome_reason=outcome_reason,
+            principal=principal,
+        )
+        printed_message = capsys.readouterr().out.strip()
+        assert printed_message == expected_log

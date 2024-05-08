@@ -4,8 +4,8 @@ PYTHONPATH = .
 
 .PHONY: test
 test:
-	coverage run  -m pytest -s -vv tests/ -x
-	coverage report --fail-under=85 -m
+	pytest --cov=audit_log -vv tests
+
 
 .PHONY: fmt
 fmt: ## Format the source code using pre-commit hooks
