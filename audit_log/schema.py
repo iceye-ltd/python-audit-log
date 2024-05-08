@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import StrEnum
 
-SCHEMA_VERSION = "v1"
+SCHEMA_VERSION = 1
 
 
 class PrincipalType(StrEnum):
