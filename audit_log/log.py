@@ -1,3 +1,4 @@
+import dataclasses
 import functools
 import json
 import uuid
