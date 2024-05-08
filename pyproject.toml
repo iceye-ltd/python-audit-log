@@ -41,7 +41,6 @@ select = [
     "TRY",   # exceptions handling
     "UP",    # pyupgrade
 ]
-flake8-builtins.builtins-ignorelist = ["hash", "help", "id", "list", "type"]
 
 ignore = [
     "E501",   # Ignore line length errors, Black will handle formatting and long comments/strings are ok
@@ -53,6 +52,9 @@ ignore = [
 unfixable = [
     "ERA", # Manual removal of those blocks to avoid false positives getting deleted
 ]
+
+[tool.ruff.lint.flake8-builtins]
+builtins-ignorelist = ["hash", "help", "id", "list", "type"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**.py" = ["S"]
