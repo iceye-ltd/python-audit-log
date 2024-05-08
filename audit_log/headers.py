@@ -2,6 +2,8 @@ import re
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
+from audit_log.exceptions import AuditPrincipalError
+
 from .schema import Principal, PrincipalType
 
 MTLS_CERT_HEADER = "x-forwarded-client-cert"
@@ -71,8 +73,7 @@ def get_principal_from_headers(
         headers (dict[str, str]): Headers with all keys lowercase
 
     Raises:
-        ValueError: Invalid configuration or headers
-        KeyError: Missing headers that are required to be set
+        AuditPrincipalError: Cannot get a principal from the headers
 
     Returns:
         dict[str, str]: Principal dictionary in proper format
@@ -82,9 +83,16 @@ def get_principal_from_headers(
         sub = headers[SUB_HEADER]
         sub_type = headers[SUB_TYPE_HEADER]
 
-        return Principal(type=PrincipalType(sub_type), authority=iss, id=sub)
+        try:
+            return Principal(type=PrincipalType(sub_type), authority=iss, id=sub)
+        except ValueError as e:
+            raise AuditPrincipalError("Invalid JWT headers") from e
 
-    spiffe = parse_spiffe(headers[MTLS_CERT_HEADER])
-    return Principal(
-        type=PrincipalType.SERVICE, authority=spiffe.domain, id=spiffe.spiffe_id
-    )
+    try:
+        spiffe = parse_spiffe(headers[MTLS_CERT_HEADER])
+    except Exception as e:
+        raise AuditPrincipalError("Invalid SPIFFE header") from e
+    else:
+        return Principal(
+            type=PrincipalType.SERVICE, authority=spiffe.domain, id=spiffe.spiffe_id
+        )
