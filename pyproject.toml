@@ -62,3 +62,7 @@ builtins-ignorelist = ["hash", "help", "id", "list", "type"]
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 mark-parentheses = false
+
+[tool.coverage.run]
+omit = ["**/tests/*", "*venv*/*"]
+source = ["audit_log"]
