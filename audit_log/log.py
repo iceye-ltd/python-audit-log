@@ -8,12 +8,17 @@ from datetime import UTC, datetime
 from functools import singledispatch
 from typing import Any
 
+from audit_log.headers import (
+    ISS_HEADER,
+    SUB_HEADER,
+    SUB_TYPE_HEADER,
+    get_principal_from_headers,
+)
 from audit_log.schema import (
     SCHEMA_VERSION,
     ActionType,
     OutcomeResult,
     Principal,
-    PrincipalType,
 )
 
 
@@ -78,6 +83,12 @@ def log(
 
 
 if __name__ == "__main__":
+    headers = {
+        SUB_HEADER: "eric.cartman@yahoo.com",
+        ISS_HEADER: "respect_mime",
+        SUB_TYPE_HEADER: "USER",
+    }
+    principal = get_principal_from_headers(headers)
     log(
         action_type=ActionType.CREATE,
         resource_type="test",
@@ -85,9 +96,5 @@ if __name__ == "__main__":
         result=OutcomeResult.SUCCEEDED,
         request_id=uuid.uuid4(),
         outcome_reason=ValueError("test"),  # type: ignore[arg-type] # Purposeful mis-type to verify
-        principal=Principal(
-            type=PrincipalType.USER,
-            authority="respect_mime",
-            id="eric.cartman@yahoo.com",
-        ),
+        principal=principal,
     )
