@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import StrEnum
 
 SCHEMA_VERSION = "v1"
@@ -18,3 +19,10 @@ class ActionType(StrEnum):
 class OutcomeResult(StrEnum):
     SUCCEEDED = "SUCCEEDED"
     DENIED = "DENIED"
+
+
+@dataclass
+class Principal:
+    type: PrincipalType
+    authority: str
+    id: str

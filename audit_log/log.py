@@ -1,3 +1,4 @@
+import dataclasses
 import functools
 import json
 import uuid
@@ -7,7 +8,18 @@ from datetime import UTC, datetime
 from functools import singledispatch
 from typing import Any
 
-from audit_log.schema import SCHEMA_VERSION, ActionType, OutcomeResult, PrincipalType
+from audit_log.headers import (
+    ISS_HEADER,
+    SUB_HEADER,
+    SUB_TYPE_HEADER,
+    get_principal_from_headers,
+)
+from audit_log.schema import (
+    SCHEMA_VERSION,
+    ActionType,
+    OutcomeResult,
+    Principal,
+)
 
 
 @singledispatch
@@ -39,7 +51,7 @@ def log(
     resource_type: str,
     resource_id: Any,
     result: OutcomeResult,
-    principal: dict[str, str],
+    principal: Principal,
     request_id: str | uuid.UUID | None = None,
     outcome_reason: str | None = None,
     before: Any | None = None,
@@ -64,13 +76,19 @@ def log(
                     "after": after,
                 },
                 "context": {"request": {"id": request_id}},
-                "principal": principal,
+                "principal": dataclasses.asdict(principal),
             }
         )
     )
 
 
 if __name__ == "__main__":
+    headers = {
+        SUB_HEADER: "eric.cartman@yahoo.com",
+        ISS_HEADER: "respect_mime",
+        SUB_TYPE_HEADER: "USER",
+    }
+    principal = get_principal_from_headers(headers)
     log(
         action_type=ActionType.CREATE,
         resource_type="test",
@@ -78,9 +96,5 @@ if __name__ == "__main__":
         result=OutcomeResult.SUCCEEDED,
         request_id=uuid.uuid4(),
         outcome_reason=ValueError("test"),  # type: ignore[arg-type] # Purposeful mis-type to verify
-        principal={
-            "type": PrincipalType.USER,
-            "authority": "respect_mine",
-            "id": "eric.cartman@yahoo.com",
-        },
+        principal=principal,
     )
