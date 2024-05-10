@@ -4,7 +4,7 @@ PYTHONPATH = .
 
 .PHONY: test
 test:
-	pytest --cov=audit_log -vv tests
+	PYTHONPATH=. pytest --cov=audit_log -vv tests
 
 
 .PHONY: fmt
