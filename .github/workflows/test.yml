@@ -1,0 +1,36 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+      with:
+        # Need fetch-depth 0 for generating version based on tags/commits since tag
+        fetch-depth: 0
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install Deps
+      run: make setup
+
+    - name: Lint
+      run: make lint
+
+    - name: Run tests
+      run: make test
