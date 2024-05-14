@@ -78,6 +78,7 @@ def get_principal_from_headers(
     Returns:
         dict[str, str]: Principal dictionary in proper format
     """
+    headers = {k.lower(): v for k, v in headers.items()}
     if all(header in headers for header in (ISS_HEADER, SUB_HEADER, SUB_TYPE_HEADER)):
         iss = headers[ISS_HEADER]
         sub = headers[SUB_HEADER]

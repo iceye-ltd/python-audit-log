@@ -78,3 +78,26 @@ def test_get_principal_from_headers_with_jwt_valid():
 def test_get_principal_from_headers_with_jwt_invalid():
     with pytest.raises(AuditPrincipalError, match="Invalid JWT headers"):
         get_principal_from_headers(INVALID_JWT_HEADERS)
+
+
+def test_parse_principal_case_insensitive():
+    headers = {
+        "X-JwT-cLaIm-IsS": "example.com",
+        "x-jWt-ClAiM-sUb": "user123",
+        "X-JWT-claim-SUB-type": "USER",
+    }
+    principal = get_principal_from_headers(headers)
+    assert principal.type == PrincipalType.USER
+    assert principal.authority == "example.com"
+    assert principal.id == "user123"
+
+
+def test_parse_principal_spiffe_insensitive():
+    headers = {
+        "X-fOrWaRdEd-ClIeNt-CeRt": VALID_SPIFFE_HEADER,
+    }
+    principal = get_principal_from_headers(headers)
+    assert isinstance(principal, Principal)
+    assert principal.type == PrincipalType.SERVICE
+    assert principal.authority == "example.com"
+    assert principal.id == "spiffe://example.com/ns/namespace/sa/service-account"
