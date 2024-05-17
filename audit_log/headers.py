@@ -27,6 +27,8 @@ def parse_spiffe(xfcc_header: str) -> ParsedSPIFFE:
 
     Raises exception if header is invalid.
 
+    Note: When using this with Istio, the ingress gateway will also include a SPIFFE header. However, this does not represent the actual principal.
+
     Args:
         xfcc_header (str): X-Forwarded-Client-Cert header contents
 
