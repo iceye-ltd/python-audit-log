@@ -18,7 +18,7 @@ VALID_SPIFFE_HEADER_INVALID_PATH = (
 VALID_HEADERS = {
     "x-forwarded-client-cert": VALID_SPIFFE_HEADER,
 }
-INVALID_HEADERS = {}
+INVALID_HEADERS: dict[str, str] = {}
 
 VALID_JWT_HEADERS = {
     "x-jwt-claim-sub": "user123",
