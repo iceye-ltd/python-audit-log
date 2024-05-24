@@ -6,7 +6,7 @@ SCHEMA_VERSION = 1
 
 class PrincipalType(StrEnum):
     USER = "USER"
-    SERVICE = "SERVICE"
+    SYSTEM = "SYSTEM"
 
 
 class ActionType(StrEnum):
