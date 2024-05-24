@@ -97,5 +97,5 @@ def get_principal_from_headers(
         raise AuditPrincipalError("Invalid SPIFFE header") from e
     else:
         return Principal(
-            type=PrincipalType.SERVICE, authority=spiffe.domain, id=spiffe.spiffe_id
+            type=PrincipalType.SYSTEM, authority=spiffe.domain, id=spiffe.spiffe_id
         )

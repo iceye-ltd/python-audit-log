@@ -57,7 +57,7 @@ def test_parse_spiffe_invalid_header():
 def test_get_principal_from_headers_valid():
     principal = get_principal_from_headers(VALID_HEADERS)
     assert isinstance(principal, Principal)
-    assert principal.type == PrincipalType.SERVICE
+    assert principal.type == PrincipalType.SYSTEM
     assert principal.authority == "example.com"
     assert principal.id == "spiffe://example.com/ns/namespace/sa/service-account"
 
@@ -98,6 +98,6 @@ def test_parse_principal_spiffe_insensitive():
     }
     principal = get_principal_from_headers(headers)
     assert isinstance(principal, Principal)
-    assert principal.type == PrincipalType.SERVICE
+    assert principal.type == PrincipalType.SYSTEM
     assert principal.authority == "example.com"
     assert principal.id == "spiffe://example.com/ns/namespace/sa/service-account"
