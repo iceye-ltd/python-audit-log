@@ -2,7 +2,7 @@
 name = "iceye-audit-log"
 description = "Audit logging library for Python"
 dynamic = ["version"]
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 readme = "README.md"
 dependencies = []
 license = { file = "LICENSE" }

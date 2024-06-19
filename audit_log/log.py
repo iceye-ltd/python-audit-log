@@ -2,11 +2,12 @@ import dataclasses
 import functools
 import json
 import uuid
+import zoneinfo
 from collections.abc import Callable
 from contextvars import ContextVar
-from datetime import UTC, datetime
+from datetime import datetime
 from functools import singledispatch
-from typing import Any
+from typing import Any, Optional, Union
 
 from audit_log.schema import (
     SCHEMA_VERSION,
@@ -17,7 +18,7 @@ from audit_log.schema import (
 
 
 @singledispatch
-def to_serializable(val) -> dict | list | str:
+def to_serializable(val) -> Union[dict, list, str]:
     """Default serialization"""
     return str(val)
 
@@ -37,7 +38,7 @@ def serialize_exceptions(val: Exception) -> str:
 json_dumps = functools.partial(json.dumps, default=to_serializable)
 
 # Example use of ContextVar, TBD if this works well
-REQ_ID: ContextVar[str | uuid.UUID] = ContextVar("request_id")
+REQ_ID: ContextVar[Union[str, uuid.UUID]] = ContextVar("request_id")
 
 
 def log(
@@ -46,13 +47,13 @@ def log(
     resource_id: Any,
     result: OutcomeResult,
     principal: Principal,
-    request_id: str | uuid.UUID | None = None,
-    outcome_reason: str | None = None,
-    before: Any | None = None,
-    after: Any | None = None,
-    serializer: Callable[[dict], str | bytes] = json_dumps,
+    request_id: Union[str, uuid.UUID, None] = None,
+    outcome_reason: Optional[str] = None,
+    before: Any = None,
+    after: Any = None,
+    serializer: Callable[[dict], Union[str, bytes]] = json_dumps,
 ):
-    now = datetime.now(tz=UTC).isoformat()
+    now = datetime.now(tz=zoneinfo.ZoneInfo("UTC")).isoformat()
     request_id = request_id or REQ_ID.get()
     print(
         serializer(

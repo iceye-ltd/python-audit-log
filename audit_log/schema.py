@@ -1,7 +1,11 @@
+import enum
 from dataclasses import dataclass
-from enum import StrEnum
 
 SCHEMA_VERSION = 1
+
+
+class StrEnum(str, enum.Enum):
+    pass
 
 
 class PrincipalType(StrEnum):
