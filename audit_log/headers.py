@@ -1,5 +1,5 @@
 import re
-import typing
+from collections.abc import Mapping
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
@@ -66,7 +66,7 @@ def parse_spiffe(xfcc_header: str) -> ParsedSPIFFE:
 
 
 def get_principal_from_headers(
-    headers: typing.Mapping[str, str],
+    headers: Mapping[str, str],
 ) -> Principal:
     """Get principal from headers, supports mTLS, headers set in Istio, and JWTs.
 
