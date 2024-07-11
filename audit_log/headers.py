@@ -1,4 +1,5 @@
 import re
+import typing
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
@@ -65,14 +66,14 @@ def parse_spiffe(xfcc_header: str) -> ParsedSPIFFE:
 
 
 def get_principal_from_headers(
-    headers: dict[str, str],
+    headers: typing.Mapping[str, str],
 ) -> Principal:
     """Get principal from headers, supports mTLS, headers set in Istio, and JWTs.
 
     Note: Do not use this to handle your auth, it expects auth to already be handled elsewhere and this is just to help get principals.
 
     Args:
-        headers (dict[str, str]): Headers with all keys lowercase
+        headers (Mapping[str, str]): Headers with all keys lowercase
 
     Raises:
         AuditPrincipalError: Cannot get a principal from the headers
