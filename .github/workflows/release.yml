@@ -9,6 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     environment: release
+    timeout-minutes: 60
     permissions:
       # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write

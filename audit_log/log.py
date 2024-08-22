@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from functools import singledispatch
 from typing import Any
 
+from audit_log.exceptions import AuditValidationError
 from audit_log.schema import (
     SCHEMA_VERSION,
     ActionType,
@@ -54,6 +55,17 @@ def log(
 ):
     now = datetime.now(tz=UTC).isoformat()
     request_id = request_id or REQ_ID.get()
+    if result == OutcomeResult.SUCCEEDED:
+        if resource_id is None:
+            raise AuditValidationError("Missing resource ID")
+        if action_type == ActionType.CREATE and after is None:
+            raise AuditValidationError("Missing 'after' with CREATE action")
+        if action_type == ActionType.UPDATE and (before is None or after is None):
+            raise AuditValidationError(
+                "Missing 'before' and 'after' with UPDATE action"
+            )
+        if action_type == ActionType.DELETE and before is None:
+            raise AuditValidationError("Missing 'before' with DELETE action")
     print(
         serializer(
             {
