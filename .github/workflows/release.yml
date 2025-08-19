@@ -11,6 +11,7 @@ jobs:
     environment: release
     timeout-minutes: 60
     permissions:
+      contents: read
       # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
     steps:
