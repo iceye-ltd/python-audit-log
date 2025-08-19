@@ -21,7 +21,8 @@ jobs:
         python-version:
           - "3.11"
           - "3.12"
-          - "3.13.0-beta - 3.13"
+          - "3.13"
+          - "3.14.0-beta - 3.14"
 
     steps:
       - name: Checkout the code
